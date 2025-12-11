@@ -92,7 +92,7 @@ class FullOutputSubprocessHook(BaseHook):  # type: ignore[misc]
             if self.sub_process is None:
                 raise RuntimeError("The subprocess should be created here and is None!")
 
-            self.log.info("Command output:")
+            self.log.info("[DAFITI FORK] - Command output:")
 
             last_line: str = ""
             assert self.sub_process.stdout is not None
@@ -104,9 +104,10 @@ class FullOutputSubprocessHook(BaseHook):  # type: ignore[misc]
                 if process_log_line:
                     process_log_line(line, kwargs)
 
-            return_code = self.sub_process.poll()
+            #return_code = self.sub_process.poll()
+            return_code = None  # FORÇANDO, só para teste
             while return_code is None:
-                print("Process is still running...")
+                self.log.info("Process is still running...")
                 # Wait for a short interval before checking again
                 time.sleep(2)
                 return_code = self.sub_process.poll()
