@@ -11,6 +11,7 @@ from collections.abc import Callable
 from subprocess import PIPE, STDOUT, Popen
 from tempfile import TemporaryDirectory, gettempdir
 from typing import Any, NamedTuple
+import time
 
 try:
     # Airflow 3.1 onwards
@@ -103,8 +104,12 @@ class FullOutputSubprocessHook(BaseHook):  # type: ignore[misc]
                 if process_log_line:
                     process_log_line(line, kwargs)
 
-            # Wait until process completes
-            return_code = self.sub_process.wait()
+            return_code = self.sub_process.poll()
+            while return_code is None:
+                print("Process is still running...")
+                # Wait for a short interval before checking again
+                time.sleep(2)
+                return_code = self.sub_process.poll()
 
             self.log.info("Command exited with return code %s", return_code)
 
